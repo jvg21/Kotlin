@@ -2,62 +2,53 @@ package com.example.loginpage
 
 import android.content.Context
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.widget.Button
 import android.widget.EditText
-import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+
 
 class SecondActivity : AppCompatActivity() {
-    private lateinit var newUsernameEditText: EditText
-    private lateinit var newPasswordEditText: EditText
-    private lateinit var saveButton: Button
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContentView(R.layout.activity_second)
 
-        newUsernameEditText = findViewById(R.id.newUsernameEditText)
-        newPasswordEditText = findViewById(R.id.newPasswordEditText)
-        saveButton = findViewById(R.id.saveButton)
-
-        saveButton.isEnabled = false
-
-        val textWatcher = object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                saveButton.isEnabled = newUsernameEditText.text.isNotEmpty() && newPasswordEditText.text.isNotEmpty()
-            }
-            override fun afterTextChanged(s: Editable?) {}
-        }
-
-        newUsernameEditText.addTextChangedListener(textWatcher)
-        newPasswordEditText.addTextChangedListener(textWatcher)
+        val newUsernameEditText: EditText = findViewById(R.id.newUsername)
+        val newPasswordEditText: EditText = findViewById(R.id.newPassword)
+        val saveButton: Button = findViewById(R.id.saveButton)
 
         saveButton.setOnClickListener {
-            val sharedPreferences = getSharedPreferences("LoginPrefs", Context.MODE_PRIVATE)
-            val editor = sharedPreferences.edit()
-            editor.putString("username", newUsernameEditText.text.toString())
-            editor.putString("password", newPasswordEditText.text.toString())
-            editor.apply()
-            AlertDialog.Builder(this)
-                .setMessage("Credenciais atualizadas com sucesso!")
-                .setPositiveButton("OK") { dialog, which ->
-                    finish()
-                }
-                .show()
-        }
+            val newUsername = newUsernameEditText.text.toString().trim()
+            val newPassword = newPasswordEditText.text.toString().trim()
 
-//        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-//            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-//            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-//            insets
-//        }
+            if (newUsername.isBlank() || newPassword.isBlank()) {
+                AlertDialog.Builder(this)
+                    .setTitle("Erro")
+                    .setMessage("Todos os campos devem ser preenchidos.")
+                    .setPositiveButton("OK", null)
+                    .show()
+            } else {
+                updateCredentials(newUsername, newPassword)
+            }
+        }
+    }
+
+    private fun updateCredentials(newUsername: String, newPassword: String) {
+        val sharedPrefs = getSharedPreferences("Login", Context.MODE_PRIVATE)
+        val editor = sharedPrefs.edit()
+
+        // Aqui você pode querer verificar se o novoUsername já existe e tratar isso de acordo.
+        // Para simplificar, estamos apenas atualizando as credenciais.
+
+        editor.putString(newUsername, "$newPassword|user") // Assume "user" como tipo padrão. Adapte conforme necessário.
+        editor.apply()
+
+        AlertDialog.Builder(this)
+            .setTitle("Sucesso")
+            .setMessage("Credenciais atualizadas com sucesso!")
+            .setPositiveButton("OK") { _, _ ->
+                finish() // Retorna para a LoginActivity ou onde quer que seja apropriado
+            }
+            .show()
     }
 }

@@ -1,57 +1,52 @@
 package com.example.loginpage
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.widget.Button
 import android.widget.EditText
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 
 class MainActivity : AppCompatActivity() {
-
-    private lateinit var usernameEditText: EditText
-    private lateinit var passwordEditText: EditText
-    private lateinit var loginButton: Button
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContentView(R.layout.activity_main)
 
-        usernameEditText = findViewById(R.id.usernameEditText)
-        passwordEditText = findViewById(R.id.passwordEditText)
-        loginButton = findViewById(R.id.loginButton)
-
-        loginButton.isEnabled = false
-
-        val textWatcher = object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                loginButton.isEnabled = usernameEditText.text.isNotEmpty() && passwordEditText.text.isNotEmpty()
-            }
-            override fun afterTextChanged(s: Editable?) {}
-        }
-
-        usernameEditText.addTextChangedListener(textWatcher)
-        passwordEditText.addTextChangedListener(textWatcher)
+        val usernameEditText: EditText = findViewById(R.id.username)
+        val passwordEditText: EditText = findViewById(R.id.password)
+        val loginButton: Button = findViewById(R.id.loginButton)
+        val cadastroButton: Button = findViewById(R.id.cadastroButton)
 
         loginButton.setOnClickListener {
-            val sharedPreferences = getSharedPreferences("LoginPrefs", Context.MODE_PRIVATE)
-            val username = sharedPreferences.getString("username","user")
-            val password = sharedPreferences.getString("password","1234")
+            val username = usernameEditText.text.toString()
+            val password = passwordEditText.text.toString()
 
-            if (usernameEditText.text.toString() == username && passwordEditText.text.toString() == password) {
-                val intent = Intent(this, SecondActivity::class.java)
+            if (checkCredentials(username, password)) {
+                val intent = Intent(this, SecondActivity::class.java).apply {
+                    putExtra("username", username)
+                }
                 startActivity(intent)
             } else {
-                AlertDialog.Builder(this).setMessage("Username ou Password inválidos").setPositiveButton("OK", null).show()
+                AlertDialog.Builder(this)
+                    .setTitle("Erro")
+                    .setMessage("Username ou Password incorretos!")
+                    .setPositiveButton("OK", null)
+                    .show()
             }
         }
 
+        cadastroButton.setOnClickListener{
+            val intent = Intent(this, RegisterUserActivity::class.java)
+            startActivity(intent)
+        }
+
+
+    }
+
+    private fun checkCredentials(username: String, password: String): Boolean {
+        val sharedPrefs = getSharedPreferences("Login", MODE_PRIVATE)
+        val userDetails = sharedPrefs.getString(username, null) ?: return false
+        val savedPassword = userDetails.split("|")[0]
+        return password == savedPassword
     }
 }

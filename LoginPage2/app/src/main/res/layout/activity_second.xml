@@ -19,7 +19,7 @@
         />
 
     <EditText
-        android:id="@+id/newUsername"
+        android:id="@+id/newUsernameEditText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
@@ -31,7 +31,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
-        android:id="@+id/newPassword"
+        android:id="@+id/newPasswordEditText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
@@ -41,7 +41,7 @@
         android:inputType="textPassword"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/newUsername" />
+        app:layout_constraintTop_toBottomOf="@+id/newUsernameEditText" />
 
     <Button
         android:id="@+id/saveButton"
@@ -51,6 +51,6 @@
         android:text="Salvar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/newPassword" />
+        app:layout_constraintTop_toBottomOf="@+id/newPasswordEditText" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
